@@ -22,7 +22,6 @@
         .mat-card.active { border-color: #00d4ff; background: #2a2a2a; }
         .mat-color { width: 25px; height: 25px; border-radius: 50%; margin-bottom: 5px; }
         .mat-name { font-size: 9px; color: #aaa; text-align: center; }
-        .btn-order { width: 100%; padding: 15px; background: linear-gradient(90deg, #007bff, #00d4ff); border: none; border-radius: 12px; color: white; font-weight: 800; font-size: 16px; text-transform: uppercase; cursor: pointer; margin-bottom: 20px; }
         #canvas-3d { width: 100%; height: 100vh; position: absolute; top: 0; left: 0; }
         @media(min-width: 768px) { #ui-container { width: 400px; height: 100vh; top: 0; right: 0; border-radius: 0; max-height: 100vh; border-left: 1px solid #333; border-top: none; } #canvas-3d { width: calc(100% - 400px); } }
     </style>
@@ -37,8 +36,7 @@
     <div class="control-row"><span class="label">Глуб</span><input type="range" id="d" oninput="updateAll()"><span class="val" id="val_d"></span></div>
     <h2>Декор</h2>
     <div class="mat-grid" id="mat-list"></div>
-    <button class="btn-order" onclick="sendOrder()">ЗАКАЗАТЬ (TEST)</button>
-</div>
+    <div style="height: 20px;"></div> </div>
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
@@ -93,53 +91,23 @@
         const total = Math.round(area * 1.3 * materials[selectedMatIndex].price);
         document.getElementById('total-price').innerText = total.toLocaleString('ru-RU');
         
-        // КНОПКА TELEGRAM
-        if (tg.MainButton.isVisible === false) {
-            tg.MainButton.text = "ОФОРМИТЬ ЗАКАЗ";
+        // КНОПКА TELEGRAM (MAIN BUTTON)
+        if (!tg.MainButton.isVisible) {
+            tg.MainButton.setText("ОФОРМИТЬ ЗАКАЗ");
             tg.MainButton.show();
-            tg.MainButton.onClick(sendOrder);
         }
     }
-
-    // === ОТПРАВКА С ПРОВЕРКОЙ (DEBUG) ===
-    function sendOrder() {
-        // УВЕДОМЛЕНИЕ 1: Функция запустилась
-        alert("ЭТАП 1: Нажата кнопка. Готовлю данные...");
-
+    
+    // ВАЖНО: Привязываем событие напрямую к MainButton
+    tg.MainButton.onClick(function() {
         const orderData = {
             name: "Model",
             dimensions: { width: parseInt(inpW.value), height: parseInt(inpH.value), depth: parseInt(inpD.value) },
             target_material: materials[selectedMatIndex].name
         };
+        tg.sendData(JSON.stringify(orderData)); 
+    });
 
-        // УВЕДОМЛЕНИЕ 2: Данные готовы
-        // alert("ЭТАП 2: Данные: " + JSON.stringify(orderData));
-
-        try {
-            // Пробуем отправить
-            if (tg.initData) {
-                // УВЕДОМЛЕНИЕ 3: Отправляю в Telegram
-                alert("ЭТАП 3: Отправляю через tg.sendData...");
-                tg.sendData(JSON.stringify(orderData));
-            } else {
-                alert("ЭТАП 3: Это не Телеграм! Скачиваю файл...");
-                downloadJSON(orderData);
-            }
-        } catch (e) {
-            alert("ОШИБКА: " + e.message);
-        }
-    }
-
-    function downloadJSON(data) {
-        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "test_export.json";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-    
     let isDown=false, startX; const cvs = document.getElementById('canvas-3d');
     cvs.addEventListener('mousedown', e=>{isDown=true; startX=e.clientX;}); window.addEventListener('mouseup',()=>isDown=false);
     window.addEventListener('mousemove',e=>{if(!isDown)return; const d=(e.clientX-startX)*0.005; camera.position.x=camera.position.x*Math.cos(d)-camera.position.z*Math.sin(d); camera.position.z=camera.position.x*Math.sin(d)+camera.position.z*Math.cos(d); camera.lookAt(0,1000,0); startX=e.clientX; renderer.render(scene, camera);});
