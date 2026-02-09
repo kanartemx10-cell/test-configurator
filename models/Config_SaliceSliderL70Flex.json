@@ -1,0 +1,17 @@
+{
+    "name": "SaliceSliderL70Flex",
+    "dimensions": {
+        "w": 2400,
+        "h": 2400,
+        "d": 600
+    },
+    "limits": {
+        "minW": 1740,
+        "maxW": 3400,
+        "minH": 600,
+        "maxH": 2733,
+        "minD": 400,
+        "maxD": 1200
+    },
+    "exportDate": "09.02.2026, 17:37:54"
+}
