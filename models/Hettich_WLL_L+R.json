@@ -1,0 +1,21 @@
+{
+  "name": "Model",
+  "dimensions": {
+    "w": 1600,
+    "h": 2400,
+    "d": 600
+  },
+  "limits": {
+    "minW": 1018,
+    "maxW": 2400,
+    "minH": 600,
+    "maxH": 2615,
+    "minD": 300,
+    "maxD": 1200
+  },
+  "materialColor": {
+    "body": "#f0f0f0",
+    "facade": "#000000"
+  },
+  "exportDate": "2026-2-10 15:48:43"
+}
